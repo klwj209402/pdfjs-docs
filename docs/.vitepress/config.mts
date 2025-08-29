@@ -36,10 +36,14 @@ export default defineConfig({
       '/': [
         {
           text: '入门指南',
+          collapsed: false,
           items: [
             { text: '快速开始', link: '/guide/getting-started' },
-            { text: '安装配置', link: '/guide/installation' },
-            { text: '基本概念', link: '/guide/concepts' }
+            { text: 'Vue 集成', link: '/guide/vue-integration' },
+            { text: 'React 集成', link: '/guide/react-integration' },
+            { text: '本地开发', link: '/guide/local-development' },
+            { text: '基本概念', link: '/guide/concepts' },
+            { text: '配置选项', link: '/guide/configuration' }
           ]
         },
         {
@@ -142,17 +146,20 @@ export default defineConfig({
         {
           text: '入门指南',
           items: [
+            { text: '基本概念', link: '/guide/concepts' },
+            { text: '安装', link: '/guide/installation' },
             { text: '快速开始', link: '/guide/getting-started' },
-            { text: '安装配置', link: '/guide/installation' },
-            { text: '基本概念', link: '/guide/concepts' }
+            { text: 'Vue 集成', link: '/guide/vue-integration' },
+            { text: 'React 集成', link: '/guide/react-integration' },
+            { text: '本地开发', link: '/guide/local-development' },
           ]
         },
         {
           text: '进阶指南',
           items: [
-            { text: '性能优化', link: '/guide/performance' },
             { text: '错误处理', link: '/guide/error-handling' },
-            { text: '最佳实践', link: '/guide/best-practices' }
+            { text: '性能优化', link: '/guide/performance' },
+            { text: '常见问题', link: '/guide/faq' }
           ]
         }
       ]

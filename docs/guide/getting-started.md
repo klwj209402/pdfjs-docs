@@ -4,7 +4,7 @@
 
 ## 安装
 
-### 通过 CDN
+### 通过 CDN 引入
 
 最简单的方式是通过 CDN 引入 PDF.js：
 
@@ -20,40 +20,44 @@
     <!-- 引入 PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        // 配置 Worker
+        // 设置 Worker 路径
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
 </body>
 </html>
 ```
 
-### 通过 npm
+### 通过 npm 安装
 
-如果您使用构建工具，可以通过 npm 安装：
+如果你使用现代前端构建工具，可以通过 npm 安装：
 
 ```bash
 npm install pdfjs-dist
 ```
 
-然后在您的代码中引入：
+然后在你的项目中引入：
 
 ```javascript
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 
-// 配置 Worker
+// 设置 Worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 ```
 
 ### 下载源码
 
-您也可以从 [GitHub](https://github.com/mozilla/pdf.js) 下载源码并构建：
+你也可以直接下载 PDF.js 的构建文件：
 
-```bash
-git clone https://github.com/mozilla/pdf.js.git
-cd pdf.js
-npm install
-npm run build
+1. 访问 [PDF.js 发布页面](https://github.com/mozilla/pdf.js/releases)
+2. 下载最新版本的 `pdfjs-dist` 包
+3. 解压并将文件放到你的项目中
+
+```html
+<script src="./pdfjs/build/pdf.js"></script>
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.js';
+</script>
 ```
 
 ## 基本使用
@@ -276,85 +280,199 @@ window.addEventListener('resize', function() {
 
 ## 错误处理
 
-完善的错误处理是必要的：
+在实际应用中，错误处理非常重要：
 
 ```javascript
-function loadPDF(url) {
-    const loadingTask = pdfjsLib.getDocument(url);
-    
-    return loadingTask.promise.catch(function(error) {
-        let errorMessage = '加载 PDF 时发生错误: ';
+async function loadPDFWithErrorHandling(url) {
+    try {
+        const loadingTask = pdfjsLib.getDocument(url);
         
-        if (error instanceof pdfjsLib.InvalidPDFException) {
-            errorMessage += '无效的 PDF 文件';
-        } else if (error instanceof pdfjsLib.MissingPDFException) {
-            errorMessage += 'PDF 文件不存在';
-        } else if (error instanceof pdfjsLib.UnexpectedResponseException) {
-            errorMessage += '网络请求失败';
+        // 监听加载进度
+        loadingTask.onProgress = function(progress) {
+            console.log(`加载进度: ${(progress.loaded / progress.total * 100).toFixed(1)}%`);
+        };
+        
+        // 处理密码保护的 PDF
+        loadingTask.onPassword = function(callback, reason) {
+            const password = prompt('请输入 PDF 密码:');
+            callback(password);
+        };
+        
+        const pdfDocument = await loadingTask.promise;
+        return pdfDocument;
+        
+    } catch (error) {
+        console.error('PDF 加载失败:', error);
+        
+        // 根据错误类型提供不同的处理
+        if (error.name === 'InvalidPDFException') {
+            alert('无效的 PDF 文件');
+        } else if (error.name === 'MissingPDFException') {
+            alert('PDF 文件不存在');
+        } else if (error.name === 'UnexpectedResponseException') {
+            alert('网络错误，请检查文件路径');
         } else {
-            errorMessage += error.message || '未知错误';
-        }
-        
-        console.error(errorMessage);
-        
-        // 显示错误信息给用户
-        const errorDiv = document.getElementById('error-message');
-        if (errorDiv) {
-            errorDiv.textContent = errorMessage;
-            errorDiv.style.display = 'block';
+            alert('加载 PDF 时发生未知错误');
         }
         
         throw error;
-    });
+    }
 }
 ```
 
 ## 性能优化建议
 
-1. **使用 Web Worker**: PDF.js 默认使用 Web Worker 来处理 PDF 解析，避免阻塞主线程
+### 1. 按需加载页面
 
-2. **按需加载页面**: 对于大文档，只渲染当前可见的页面
-
-3. **合理设置缩放比例**: 过高的缩放比例会消耗更多内存和 CPU
-
-4. **及时清理资源**: 使用完毕后调用 `destroy()` 方法
+不要一次性渲染所有页面，而是根据用户的滚动位置按需加载：
 
 ```javascript
-// 清理资源
-function cleanup() {
-    if (window.currentPDF) {
-        window.currentPDF.destroy();
-        window.currentPDF = null;
+class LazyPDFViewer {
+    constructor(container) {
+        this.container = container;
+        this.loadedPages = new Set();
+        this.setupIntersectionObserver();
+    }
+    
+    setupIntersectionObserver() {
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const pageNumber = parseInt(entry.target.dataset.pageNumber);
+                    this.loadPage(pageNumber);
+                }
+            });
+        }, {
+            rootMargin: '100px' // 提前 100px 开始加载
+        });
+    }
+    
+    async loadPage(pageNumber) {
+        if (this.loadedPages.has(pageNumber)) return;
+        
+        this.loadedPages.add(pageNumber);
+        const page = await this.pdfDocument.getPage(pageNumber);
+        const canvas = document.querySelector(`[data-page-number="${pageNumber}"] canvas`);
+        await this.renderPage(page, canvas);
     }
 }
-
-// 页面卸载时清理
-window.addEventListener('beforeunload', cleanup);
 ```
 
-## 下一步
+### 2. 内存管理
 
-现在您已经掌握了 PDF.js 的基本使用方法，可以继续学习：
+及时清理不需要的页面和资源：
 
-- [基本概念](/guide/concepts) - 了解 PDF.js 的核心概念
-- [API 文档](/api/) - 查看完整的 API 参考
-- [示例](/examples/) - 查看更多实用示例
-- [性能优化](/guide/performance) - 学习性能优化技巧
+```javascript
+class PDFPageManager {
+    constructor(maxCachedPages = 5) {
+        this.maxCachedPages = maxCachedPages;
+        this.pageCache = new Map();
+    }
+    
+    async getPage(pageNumber) {
+        if (this.pageCache.has(pageNumber)) {
+            return this.pageCache.get(pageNumber);
+        }
+        
+        // 如果缓存已满，删除最旧的页面
+        if (this.pageCache.size >= this.maxCachedPages) {
+            const firstKey = this.pageCache.keys().next().value;
+            this.pageCache.delete(firstKey);
+        }
+        
+        const page = await this.pdfDocument.getPage(pageNumber);
+        this.pageCache.set(pageNumber, page);
+        return page;
+    }
+    
+    clearCache() {
+        this.pageCache.clear();
+    }
+}
+```
+
+### 3. 渲染优化
+
+使用合适的缩放比例和渲染选项：
+
+```javascript
+function getOptimalScale() {
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    const containerWidth = document.getElementById('pdf-container').clientWidth;
+    
+    // 根据容器宽度和设备像素比计算最佳缩放
+    return Math.min(containerWidth / 595, devicePixelRatio * 1.5); // 595 是 A4 纸的标准宽度
+}
+
+async function renderPageOptimized(page, canvas) {
+    const scale = getOptimalScale();
+    const viewport = page.getViewport({ scale });
+    
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    
+    const renderContext = {
+        canvasContext: canvas.getContext('2d'),
+        viewport: viewport,
+        intent: 'display', // 'display' 或 'print'
+        renderInteractiveForms: false // 如果不需要表单，可以禁用以提高性能
+    };
+    
+    return page.render(renderContext).promise;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 常见问题
 
-### Q: 为什么需要配置 Worker？
+### Q: 为什么 PDF.js 在本地文件系统中无法工作？
 
-A: PDF.js 使用 Web Worker 来处理 PDF 解析，避免阻塞主线程。您需要指定 Worker 脚本的路径。
+**A:** PDF.js 需要通过 HTTP(S) 协议访问，不能直接在 `file://` 协议下工作。你需要启动一个本地服务器：
 
-### Q: 如何处理跨域问题？
+```bash
+# 使用 Python
+python -m http.server 8000
 
-A: 确保 PDF 文件和 Worker 脚本都正确配置了 CORS 头，或者将它们放在同一域名下。
+# 使用 Node.js
+npx serve .
 
-### Q: 渲染的文字模糊怎么办？
+# 使用 PHP
+php -S localhost:8000
+```
 
-A: 在高 DPI 屏幕上需要考虑 `devicePixelRatio`，参考上面的响应式设计示例。
+### Q: 如何解决 "Cannot read property 'getDocument' of undefined" 错误？
 
-### Q: 如何提取 PDF 中的文本？
+**A:** 这通常是因为 PDF.js 库没有正确加载。确保：
 
-A: 使用 `page.getTextContent()` 方法，详见 [文本提取示例](/examples/text-extraction)。
+1. 脚本标签的 `src` 路径正确
+2. 在使用 `pdfjsLib` 之前，库已经完全加载
+3. 检查浏览器控制台是否有其他错误
+
+### Q: PDF 页面显示模糊怎么办？
+
+**A:** 这通常是由于设备像素比问题。尝试调整缩放比例：
+
+```javascript
+const scale = window.devicePixelRatio || 1;
+const viewport = page.getViewport({ scale: scale * 1.5 });
+```
+
+### Q: 如何处理大文件的加载性能？
+
+**A:** 可以使用以下策略：
+
+1. 启用流式加载：`disableStream: false`
+2. 禁用自动获取：`disableAutoFetch: true`
+3. 实现虚拟滚动
+4. 使用缩略图预览
