@@ -1,10 +1,14 @@
 import { defineConfig } from 'vitepress'
+// @ts-ignore
 import { resolve } from 'path'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "PDF.js 中文文档",
   description: "PDF.js JavaScript PDF 处理库的完整中文API文档",
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.svg' }]
+  ],
   base: '/pdfjs-docs/',
   lang: 'zh-CN',
   ignoreDeadLinks: true,
@@ -12,12 +16,14 @@ export default defineConfig({
   vite: {
       resolve: {
         alias: {
+          // @ts-ignore
           '@': resolve(__dirname, '../')
         }
       }
     },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/logo.svg',
     nav: [
       { text: '首页', link: '/' },
       { text: '入门指南', link: '/guide/getting-started.html' },
@@ -27,6 +33,24 @@ export default defineConfig({
     ],
 
     sidebar: {
+      '/': [
+        {
+          text: '入门指南',
+          items: [
+            { text: '快速开始', link: '/guide/getting-started' },
+            { text: '安装配置', link: '/guide/installation' },
+            { text: '基本概念', link: '/guide/concepts' }
+          ]
+        },
+        {
+          text: '进阶指南',
+          items: [
+            { text: '性能优化', link: '/guide/performance' },
+            { text: '错误处理', link: '/guide/error-handling' },
+            { text: '最佳实践', link: '/guide/best-practices' }
+          ]
+        }
+      ],
       '/api/': [
         {
           text: '核心API',

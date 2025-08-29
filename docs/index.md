@@ -5,6 +5,9 @@ hero:
   name: "PDF.js"
   text: "中文文档"
   tagline: JavaScript PDF 处理库的完整中文API文档
+  image:
+    src: /logo.svg
+    alt: PDF.js Logo
   actions:
     - theme: brand
       text: 快速开始
