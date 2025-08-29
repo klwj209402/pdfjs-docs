@@ -147,7 +147,7 @@ export default defineConfig({
           text: '入门指南',
           items: [
             { text: '基本概念', link: '/guide/concepts' },
-            { text: '安装', link: '/guide/installation' },
+            { text: '安装配置', link: '/guide/installation' },
             { text: '快速开始', link: '/guide/getting-started' },
             { text: 'Vue 集成', link: '/guide/vue-integration' },
             { text: 'React 集成', link: '/guide/react-integration' },
