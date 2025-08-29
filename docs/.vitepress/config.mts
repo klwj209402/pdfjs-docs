@@ -5,6 +5,7 @@ import { resolve } from 'path'
 export default defineConfig({
   title: "PDF.js 中文文档",
   description: "PDF.js JavaScript PDF 处理库的完整中文API文档",
+  base: '/pdfjs-docs/',
   lang: 'zh-CN',
   ignoreDeadLinks: true,
   
