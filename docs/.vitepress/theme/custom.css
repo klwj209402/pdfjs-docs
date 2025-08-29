@@ -1,0 +1,262 @@
+/* 自定义样式 */
+
+/* 示例查看器样式优化 */
+.example-viewer {
+  margin: 24px 0;
+}
+
+.example-viewer .example-header {
+  background: var(--vp-c-bg-alt);
+}
+
+.example-viewer .preview-frame {
+  background: white;
+}
+
+/* 代码块样式增强 */
+.example-viewer .code-block {
+  background: var(--vp-code-bg);
+  border: 1px solid var(--vp-c-divider);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .example-viewer .example-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .example-viewer .example-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .example-viewer .preview-frame {
+    height: 300px;
+  }
+}
+
+/* 演示页面样式 */
+.demo-container {
+  margin: 24px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.demo-frame {
+  border: none;
+  width: 100%;
+  background: white;
+}
+
+/* 测试页面样式 */
+.test-container,
+.api-test-container,
+.benchmark-container,
+.error-test-container {
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 按钮样式统一 */
+.test-container button,
+.api-test-container button,
+.benchmark-container button,
+.error-test-container button {
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.test-container button:hover,
+.api-test-container button:hover,
+.benchmark-container button:hover,
+.error-test-container button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 表格样式优化 */
+#benchmark-table {
+  background: var(--vp-c-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#benchmark-table th {
+  background: var(--vp-c-bg-alt);
+  color: var(--vp-c-text-1);
+}
+
+#benchmark-table tr:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+/* 加载动画 */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.loading-indicator::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--vp-c-border);
+  border-top: 2px solid var(--vp-c-brand);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 错误提示样式 */
+.error-results {
+  border-left: 4px solid #dc3545;
+}
+
+.error-results h4 {
+  color: #dc3545;
+}
+
+/* API 输出样式 */
+#api-output {
+  background: var(--vp-code-bg);
+  color: var(--vp-code-color);
+  border-radius: 6px;
+}
+
+/* 信息面板样式 */
+.info-item {
+  background: var(--vp-c-bg);
+  border-radius: 6px;
+  padding: 8px;
+  border: 1px solid var(--vp-c-border);
+}
+
+/* 控制面板样式 */
+.test-controls,
+.api-controls {
+  border: 1px solid var(--vp-c-border);
+}
+
+.control-group {
+  border-bottom: 1px solid var(--vp-c-divider-light);
+  padding-bottom: 12px;
+}
+
+.control-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* 滑块样式 */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--vp-c-bg-alt);
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--vp-c-brand);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--vp-c-brand);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* 选择框样式 */
+select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 32px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* 深色模式适配 */
+.dark .demo-container {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark .test-container,
+.dark .api-test-container,
+.dark .benchmark-container,
+.dark .error-test-container {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dark .demo-frame {
+  background: var(--vp-c-bg);
+}
+
+/* 打印样式 */
+@media print {
+  .example-viewer .example-actions,
+  .test-controls,
+  .api-controls,
+  .benchmark-controls,
+  .error-controls {
+    display: none;
+  }
+  
+  .demo-frame {
+    height: auto;
+    min-height: 400px;
+  }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+  .example-viewer,
+  .test-container,
+  .api-test-container,
+  .benchmark-container,
+  .error-test-container {
+    border-width: 2px;
+  }
+  
+  button {
+    border-width: 2px;
+    font-weight: 600;
+  }
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+  .loading-indicator::before {
+    animation: none;
+  }
+  
+  button {
+    transition: none;
+  }
+  
+  button:hover {
+    transform: none;
+  }
+}
